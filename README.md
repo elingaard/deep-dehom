@@ -28,3 +28,11 @@ step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambd
 
 ## Run pre-trained model
 To try out the pre-trained a jupyter notebook `lam_width_projection.py` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
+
+## TO-DO
+- [ ] Use `Fire` for running data-sampler and trainer
+- [ ] Add type-hints for all functions
+- [ ] Re-structure the code with `pytorch-lightning`
+
+
+
