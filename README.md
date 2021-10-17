@@ -1,5 +1,7 @@
 # deep-dehom
 
+![alt text](double_clamped_200_50_vol_0.25_MinMu_0.10_p10?raw=true "Title")
+
 **!!! Code will be uploaded soon !!!**
 
 This is the official repository for the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
