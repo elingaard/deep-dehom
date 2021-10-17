@@ -1,6 +1,6 @@
 # deep-dehom
 
-![alt text](double_clamped_200_50_vol_0.25_MinMu_0.10_p10?raw=true "Title")
+![alt text](https://github.com/elingaard/deep-dehom/blob/main/double_clamped_200_50_vol_0.25_MinMu_0.10_p10.png)
 
 **!!! Code will be uploaded soon !!!**
 
