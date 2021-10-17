@@ -17,7 +17,7 @@ pip3 install -r requirements.txt
 ## Generate the dataset
 Since the model is trained on low-resolution synthethic data it's easy to generate the dataset need to train the model yourself:
 ```
-Insert code generating synthethic dataset
+python3 data_sampler.py --savepath "/Users/martinelingaard/repos/deep-dehom/training_data/test" --n_samples 100
 ```
 
 ## Train your own model
