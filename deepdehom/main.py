@@ -14,7 +14,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from models import RBF_Upsampler, get_net_dict
+from models import DehomNet, get_net_dict
 from dataset import HomogenizationData, batch_rot90, collate_fn
 from utils import DotLoss, ImgFreqLoss, batch_tv_loss, count_model_parameters, plot_img_with_colorbar
 
@@ -95,7 +95,7 @@ class DeepDehom:
 
         # initialize model
         net_dict = get_net_dict(input_dim=self.n_rbf_bins,model_size=model_size)
-        self.model = RBF_Upsampler(net_dict,out_kernel_size=out_kernel_size).to(self.device)
+        self.model = DehomNet(net_dict,out_kernel_size=out_kernel_size).to(self.device)
         if len(self.pretrained)>0:
             self.model.load_state_dict(torch.load(self.pretrained,map_location=self.device),strict=True)
             print("Using pretrained model")
