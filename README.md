@@ -6,7 +6,7 @@
 This code is experimental and mainly serves as a reference for replicating the results in the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
 
 ## Installation
-To train your own model or run one of the pre-trained model start by installing the required packages:
+To train your own model or run one of the pre-trained models start by installing the required packages:
 ```
 conda create -n deepdehom python=3.8 (Optional)
 conda activate deepdehom (Optional)
@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 ```
 
 ## Generate the dataset
-Since the model is trained on low-resolution synthethic data it's easy to generate the dataset need to train the model yourself:
+Since the model is trained on low-resolution synthethic data it's easy to generate the dataset needed to train the model yourself:
 ```
 python3 data_sampler.py --savepath "path/to/data/train" --n_samples 10000
 python3 data_sampler.py --savepath "path/to/data/test" --n_samples 1000
@@ -29,7 +29,7 @@ step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambd
 ```
 
 ## Run pre-trained model
-To try out the pre-trained a jupyter notebook `lam_width_projection.ipynb` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
+To try out the pre-trained model a jupyter notebook `lam_width_projection.ipynb` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
 
 ## TO-DO
 - [x] Use `Fire` for running data-sampler and trainer
