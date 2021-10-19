@@ -1,10 +1,9 @@
-# deep-dehom
+# Deep Dehom
 
 ![alt text](https://github.com/elingaard/deep-dehom/blob/main/double_clamped_200_50_vol_0.25_MinMu_0.10_p10.png)
 
-**!!! Code will be uploaded soon !!!**
-
-This is the official repository for replicating the results in the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
+**!!! DISCLAIMER !!!**
+This code is experimental and mainly serves as a reference for replicating the results in the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
 
 ## Installation
 To train your own model or run one of the pre-trained model start by installing the required packages:
@@ -33,8 +32,9 @@ step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambd
 To try out the pre-trained a jupyter notebook `lam_width_projection.ipynb` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
 
 ## TO-DO
-- [ ] Use `Fire` for running data-sampler and trainer
-- [ ] Add type-hints for all functions
+- [x] Use `Fire` for running data-sampler and trainer
+- [x] Add type-hints to functions
+- [ ] Add links to training data and pretrained weights 
 - [ ] Re-structure the code with `pytorch-lightning`
 
 
