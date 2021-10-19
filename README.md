@@ -4,7 +4,7 @@
 
 **!!! Code will be uploaded soon !!!**
 
-This is the official repository for the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
+This is the official repository for replicating the results in the paper "De-homogenization using Convolutional Neural Networks" (https://arxiv.org/abs/2105.04232)
 
 ## Installation
 To train your own model or run one of the pre-trained model start by installing the required packages:
@@ -30,7 +30,7 @@ step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambd
 ```
 
 ## Run pre-trained model
-To try out the pre-trained a jupyter notebook `lam_width_projection.py` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
+To try out the pre-trained a jupyter notebook `lam_width_projection.ipynb` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
 
 ## TO-DO
 - [ ] Use `Fire` for running data-sampler and trainer
