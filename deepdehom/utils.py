@@ -326,6 +326,6 @@ def plot_img_with_colorbar(img:np.ndarray,ax,cmap_style='jet'):
     cax = divider.append_axes('right', size='10%', pad=0.2)
     cbar = plt.colorbar(im,cax=cax,orientation='vertical')
 
-def normalize_data(x:torch.FloatTensor)->torch.FloatTensor:
+def normalize_data(x:np.ndarray)->np.ndarray:
     x = (x-x.min())/(x.max()-x.min())
     return x
