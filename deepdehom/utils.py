@@ -1,17 +1,12 @@
 from typing import Tuple
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.fft as fft
-import torch.nn.functional as F
+import matplotlib.pyplot as plt
 import skimage.morphology as morph
 import skimage.transform as transform
 from scipy.ndimage import gaussian_filter
 from scipy.ndimage.morphology import distance_transform_edt
 from scipy.io import loadmat
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def load_homogenization_file(filepath:str)->Tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray,np.ndarray,np.ndarray,float]:
     """Load Matlab file containing the homogenization results"""
@@ -217,114 +212,6 @@ class LaminationWidthProjection:
             self.plot_projection_fields(rho1_tilde_up,skel1,dist1_clipped,mu1_clipped,rho1_hr,rho2_hr)
 
         return rho_hr, rho1_hr, rho2_hr
-
-class DotLoss(nn.Module):
-    """Dot-product loss between the gradients of an image and a set of specified unit-vectors.
-    Image gradients are calculated in a convolutional manner using the Sobel operator.
-
-    L(x,y) = |dI(x)/dx*ex + dI(y)/dy*ey|
-
-    """
-    def __init__(self):
-        super(DotLoss, self).__init__()
-        # define sobel kernels
-        sobel_kernel = torch.tensor([[1.,0.,-1.],[2.,0.,-2.],[1.,0.,-1.]])
-        self.sobel_x = sobel_kernel.view(1,1,3,3)
-        self.sobel_y = sobel_kernel.T.view(1,1,3,3)
-
-    def forward(self,img:torch.FloatTensor,ex:torch.FloatTensor,ey:torch.FloatTensor)->Tuple[torch.FloatTensor,torch.FloatTensor,
-        Tuple[torch.FloatTensor,torch.FloatTensor]]:
-        assert len(img.size())==4
-        assert len(ex.size())==4
-        assert len(ey.size())==4
-        # apply sobel kernels to input image to get image gradients
-        dImgDx = F.conv2d(img, self.sobel_x.to(img.device),padding=1)
-        dImgDy = -F.conv2d(img, self.sobel_y.to(img.device),padding=1)
-        # use average filter to avoid very small gradients causing NaN
-        dImgDx = F.avg_pool2d(F.pad(dImgDx,pad=(1,1,1,1),mode='replicate'),kernel_size=3,stride=1)
-        dImgDy = F.avg_pool2d(F.pad(dImgDy,pad=(1,1,1,1),mode='replicate'),kernel_size=3,stride=1)
-        # normalize gradients to unit vectors
-        norm_mat_img = torch.norm(torch.cat([dImgDx,dImgDy],axis=1),dim=1).unsqueeze(1)
-        dImgDx_norm = dImgDx/norm_mat_img
-        dImgDy_norm = dImgDy/norm_mat_img
-        #img_grad_norm_min = norm_mat_img.min() # track minimum norm
-        # upsample orientations to gradient resolution
-        ex = F.interpolate(ex,size=dImgDx.shape[-2:],mode='bilinear')
-        ey = F.interpolate(ey,size=dImgDy.shape[-2:],mode='bilinear')
-        # normalize orientation vectors after upsamling
-        norm_mat_evec = torch.norm(torch.cat([ex,ey],axis=1),dim=1).unsqueeze(1)
-        ex = ex/norm_mat_evec
-        ey = ey/norm_mat_evec
-        # calculate dot-product loss
-        img_dot_loss = torch.abs(dImgDx_norm*ex + dImgDy_norm*ey)
-        # calculate mean value for each sample in the batch
-        dot_loss = img_dot_loss.view(img_dot_loss.shape[0], -1).mean(1, keepdim=True)
-        return dot_loss, img_dot_loss, (dImgDx,dImgDy)
-
-class ImgFreqLoss(nn.Module):
-    def __init__(self,img_shape:tuple,target_period:float,band_width:int=2):
-        super(ImgFreqLoss, self).__init__()
-        assert img_shape[-1]==img_shape[-2]
-        self.img_shape = img_shape
-        self.target_period = target_period
-        self.band_width = band_width
-        self.in_freq_band = self.get_freq_band_matrix()
-        self.hamm_win_2d = self.create_2d_hamming_window()
-
-    def create_2d_hamming_window(self)->torch.FloatTensor:
-        B,C,H,W = self.img_shape
-        hamm_x = torch.hamming_window(H)
-        hamm_y = torch.hamming_window(W)
-        hamm_win_2d = torch.outer(hamm_x,hamm_y).unsqueeze(0).unsqueeze(0)
-        return hamm_win_2d
-
-    def get_freq_band_matrix(self)->torch.BoolTensor:
-        """Get boolean matrix indicating the frequency band in the 2D FFT image"""
-        B,C,H,W = self.img_shape
-        target_period_idx = H//self.target_period
-        freq_range = fft.fftfreq(H,d=1).numpy()
-        inner_period_idx = target_period_idx-self.band_width
-        outer_period_idx = target_period_idx+self.band_width
-        print("Freq. band:",1/freq_range[outer_period_idx],"-",1/freq_range[inner_period_idx],"pixels/period")
-        img_center = (H//2,W//2)
-        img_x,img_y = torch.meshgrid(torch.arange(H),torch.arange(W))
-        inner_freq_band = ((img_x-img_center[0])**2+(img_y-img_center[1])**2)>inner_period_idx**2
-        outer_freq_band = ((img_x-img_center[0])**2+(img_y-img_center[1])**2)<outer_period_idx**2
-        in_freq_band = torch.logical_and(inner_freq_band,outer_freq_band)
-        return in_freq_band
-
-    def forward(self,img:torch.FloatTensor)->Tuple[float,torch.FloatTensor]:
-        """Calculate the ratio between the total energy in the FFT, and the energy inside the
-        desired frequency band"""
-        B,C,H,W = self.img_shape
-        img_fft = fft.fft2(img*self.hamm_win_2d.to(img.device))
-        img_fft = fft.fftshift(img_fft)
-        img_fft_mag = torch.abs(img_fft)
-        total_energy = torch.sum(img_fft_mag**2,dim=(1,2,3))/(H*W)
-        freq_band_mag = img_fft_mag[:,:,self.in_freq_band]
-        freq_band_energy = torch.sum(freq_band_mag**2,dim=(1,2))/(H*W)
-        energy_ratio = freq_band_energy/total_energy
-        return energy_ratio, img_fft
-
-def batch_tv_loss(img:torch.FloatTensor)->float:
-    """Total variation loss"""
-    assert len(img.size())==4
-    b,ch,h,w = img.shape
-    tv_h = torch.pow(img[:,:,1:,:]-img[:,:,:-1,:], 2).sum(dim=(1,2,3))
-    tv_w = torch.pow(img[:,:,:,1:]-img[:,:,:,:-1], 2).sum(dim=(1,2,3))
-    tv_batch_mean = (tv_h+tv_w)/(ch*h*w)
-    return tv_batch_mean
-
-def count_model_parameters(model:nn.Module)->int:
-    """Count number of learnable parameters in a PyTorch model"""
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-def plot_img_with_colorbar(img:np.ndarray,ax,cmap_style='jet'):
-    """Plot image with a scaled colorbar net to it"""
-    im = ax.imshow(img, cmap=cmap_style,vmin=0,vmax=1)
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='10%', pad=0.2)
-    cbar = plt.colorbar(im,cax=cax,orientation='vertical')
 
 def normalize_data(x:np.ndarray)->np.ndarray:
     x = (x-x.min())/(x.max()-x.min())

@@ -4,8 +4,10 @@ __pycache__/
 *$py.class
 training_data/
 pretrained/
+lightning_logs/
 .DS_STORE
 .vscode
+*.ipynb
 
 # C extensions
 *.so
