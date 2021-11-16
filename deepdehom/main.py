@@ -241,7 +241,7 @@ class DeepDehom(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         return optimizer
 
-def run_trainer(datapath="../training_data/maxAngle25_nfc_6-8-10_80x80_n10000", batch_size:int=4, model_size:str="medium", 
+def run_trainer(datapath="../synthethic_orientation_fields", batch_size:int=32, model_size:str="medium", 
                 lambda_orient:float=1.0, lambda_tv:float=1.0, lambda_fork:float=0.0, lambda_freq:float=1.0, 
                 period:int=20, n_rbf_bins:int=24,std_dev_factor:float=2.0):
 
