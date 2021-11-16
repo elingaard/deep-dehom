@@ -24,8 +24,8 @@ python3 data_sampler.py --savepath "path/to/data/test" --n_samples 1000
 As described in the paper the training is performed in two stages. In the first step the forking loss is disabled, while in the second step the frequency loss is disabled. For more information on why this is needed please refer to the paper. Using the weight factors from the paper the two stage training can be run as:
 
 ```
-step 1: python3 main.py "path/to/data" lambda_orient 1.0 --lambda_freq 1.0 --lambda_tv 1.0 --lambda_fork 0.0
-step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambda_orient 1.0 --lambda_freq 0.0 --lambda_tv 1.0 --lambda_fork 2.0
+step 1: python3 main.py "path/to/data" --lambda_orient 1.0 --lambda_freq 1.0 --lambda_tv 1.0 --lambda_fork 0.0
+step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" --lambda_orient 1.0 --lambda_freq 0.0 --lambda_tv 1.0 --lambda_fork 2.0
 ```
 
 ## Run pre-trained model
