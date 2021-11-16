@@ -31,11 +31,13 @@ step 2: python3 main.py "path/to/data" --pretrained "path/to/step1_model/" lambd
 ## Run pre-trained model
 To try out the pre-trained model a jupyter notebook `lam_width_projection.ipynb` has been provided. Here the pre-trained model can be used with a homogenization design of your own as input, or one of the pre-generated designs located in the `Output_TO` folder.
 
+Pre-trained models and the dataset used to train them is available at: https://data.dtu.dk/collections/Deep_De-Homogenization/5684665/1
+
 ## TO-DO
 - [x] Use `Fire` for running data-sampler and trainer
 - [x] Add type-hints to functions
-- [ ] Add links to training data and pretrained weights 
-- [ ] Re-structure the code with `pytorch-lightning`
+- [x] Add links to training data and pretrained weights 
+- [x] Re-structure the code with `pytorch-lightning`
 
 
 
